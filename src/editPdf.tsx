@@ -96,7 +96,7 @@ export function paintRect(
   const y = rect.y * bb.height;
   const h = rect.h * bb.height;
   const w = rect.w * bb.width;
-  const fontSize = Math.min(Math.round(h * 0.8), 0.02 * bb.height);
+  const fontSize = Math.min(Math.round(h * 0.8), 0.04 * bb.height, 0.04 * bb.width);
   page.drawRectangle({
     x,
     y,
