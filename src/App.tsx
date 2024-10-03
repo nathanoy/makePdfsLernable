@@ -491,6 +491,13 @@ function TopBar() {
         >
           Unload
         </button>
+        <a
+          target="_blank"
+          href="https://github.com/nathanoy/makePdfsLernable"
+          class="fancy-button"
+        >
+          Help
+        </a>
       </Show>
     </div>
   );
