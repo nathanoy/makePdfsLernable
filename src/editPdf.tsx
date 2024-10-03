@@ -85,28 +85,33 @@ export async function addImagesToPDF(
   }
 }
 
-export function paintRect(page: PDFPage, rect: RectLocation, text: string, font: PDFFont) {
-    const bb = page.getMediaBox();
-    const x = rect.x * bb.width;
-    const y = rect.y * bb.height;
-    const h = rect.h * bb.height;
-    const w = rect.w * bb.width;
-    const fontSize = Math.min(Math.round(h * 0.8), 0.02 * bb.height);
-    page.drawRectangle({
-      x,
-      y,
-      width: w,
-      height: -h,
-      color: rgb(0.3, 0.3, 0.3),
-    });
-    const textWidth = font.widthOfTextAtSize(text, fontSize);
-    const textHeight = font.heightAtSize(fontSize);
+export function paintRect(
+  page: PDFPage,
+  rect: RectLocation,
+  text: string,
+  font: PDFFont,
+) {
+  const bb = page.getMediaBox();
+  const x = rect.x * bb.width;
+  const y = rect.y * bb.height;
+  const h = rect.h * bb.height;
+  const w = rect.w * bb.width;
+  const fontSize = Math.min(Math.round(h * 0.8), 0.02 * bb.height);
+  page.drawRectangle({
+    x,
+    y,
+    width: w,
+    height: -h,
+    color: rgb(0.3, 0.3, 0.3),
+  });
+  const textWidth = font.widthOfTextAtSize(text, fontSize);
+  const textHeight = font.heightAtSize(fontSize);
 
-    page.drawText(text, {
-      x: x + (w - textWidth) / 2,
-      y: y - (h + textHeight) / 2,
-      color: rgb(0.9, 0.9, 0.9),
-      font: font,
-      size: fontSize,
-    });
+  page.drawText(text, {
+    x: x + (w - textWidth) / 2,
+    y: y - (h + textHeight) / 2,
+    color: rgb(0.9, 0.9, 0.9),
+    font: font,
+    size: fontSize,
+  });
 }

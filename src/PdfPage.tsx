@@ -126,7 +126,11 @@ export function PdfPage(props: {
   });
 
   const [currentRect, setCurrentRect] = createSignal<RectAnnotation>();
-  type EventOffset = { offsetX: number; offsetY: number; target: HTMLCanvasElement };
+  type EventOffset = {
+    offsetX: number;
+    offsetY: number;
+    target: HTMLCanvasElement;
+  };
 
   const start = (e: EventOffset) => {
     const bb = e.target.getBoundingClientRect();
@@ -235,6 +239,7 @@ export function PdfPage(props: {
           }
           ontouchstart={(e) => {
             ctx.setTouchMode(true);
+            if (currentRect()) return;
             const { x, y } = offsetCalc(e.currentTarget, e.changedTouches[0]);
             start({
               offsetX: x,
@@ -260,6 +265,7 @@ export function PdfPage(props: {
             passive: false,
           }}
           ontouchend={(e) => {
+            if (e.touches.length !== 0) return;
             const { x, y } = offsetCalc(e.currentTarget, e.changedTouches[0]);
             end({
               offsetX: x,

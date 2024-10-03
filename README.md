@@ -17,13 +17,10 @@ You can view and interact with the application [here](https://nathanoy.github.io
 
 ## Usage
 
-1. Upload your PDF document using the "Load" button.
-2. Select the portion of the PDF you wish to cut out.
-   - Click and drag to start a selection.
-   - Hold Control (or Command on Mac) to move the start position.
-   - Right-click on a page to delete all selections.
-3. Save your modified PDF for review later.
-4. Happy learning!
+1. Load your PDF document using the `Load` button.
+2. Select the portion of the PDF you wish to hide. Check [Controls](#Controls) for details.
+3. Click `Render` to generate the result.
+4. Click `Open` to Open the file in your browser where you can Download it if you like.
 
 ## Contributing
 
