@@ -56,7 +56,7 @@ function TopBar() {
       </Show>
       <a
         target="_blank"
-        href="https://github.com/nathanoy/makePdfsLernable"
+        href="https://github.com/nathanoy/makePdfsLernable/blob/main/Guide.md"
         class="fancy-button"
       >
         Help
