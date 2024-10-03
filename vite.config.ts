@@ -16,6 +16,6 @@ export default defineConfig({
   },
   build: {
     target: "esnext",
-    outDir: "./pages",
+    outDir: "./docs",
   },
 });
