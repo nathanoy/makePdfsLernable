@@ -3,7 +3,6 @@ import { createSignal, For, Show } from "solid-js";
 import { createPDFContext, PDFContext, useCtx } from "./context";
 import { PdfPage } from "./PdfPage";
 
-
 function TopBar() {
   const ctx = useCtx();
   const [input, setInput] = createSignal<HTMLInputElement>();
@@ -11,9 +10,19 @@ function TopBar() {
     <div class="sticky top-0 z-10 flex w-full place-content-center gap-4 p-4 backdrop-blur">
       <Show when={ctx.src()}>
         {(href) => (
-          <a href={href()} target="_blank" class="fancy-button">
-            Open
-          </a>
+          <>
+            <a href={href()} target="_blank" class="fancy-button">
+              Open
+            </a>
+            <a
+              href={href()}
+              target="_blank"
+              download="download.pdf"
+              class="fancy-button"
+            >
+              Download
+            </a>
+          </>
         )}
       </Show>
 
@@ -41,7 +50,6 @@ function TopBar() {
           </button>
         }
       >
-        {" "}
         <button onclick={ctx.render} class="fancy-button">
           Render
         </button>
