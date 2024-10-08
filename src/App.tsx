@@ -16,12 +16,12 @@ function TopBar() {
   const [input, setInput] = createSignal<HTMLInputElement>();
   const [working, setWorking] = createSignal(false);
   return (
-    <div class="sticky top-0 z-10 flex w-full place-content-center gap-4 p-4 backdrop-blur flex-wrap">
+    <div class="sticky top-0 z-10 flex w-full flex-wrap place-content-center gap-4 p-4 backdrop-blur">
       <Show when={ctx.lastUrl()}>
         {(href) => (
           <>
             <a href={href()} target="_blank" class="fancy-button">
-              <Icon path={arrowTopRightOnSquare} class="h-5"/>
+              <Icon path={arrowTopRightOnSquare} class="h-5" />
               Open Again
             </a>
             {/* <a
@@ -91,6 +91,19 @@ function TopBar() {
           <Icon path={trash} class="h-5" />
           Unload
         </button>
+        <label class="inline-flex h-[40px] cursor-pointer items-center bg-black px-4">
+          <input
+            type="checkbox"
+            value=""
+            class="peer sr-only"
+            checked={ctx.watermark()}
+            oninput={(e) => ctx.setWatermark(e.target.checked)}
+          />
+          <div class="peer relative h-5 w-9 rounded-full bg-red-500 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-white rtl:peer-checked:after:-translate-x-full"></div>
+          <span class="ms-3 select-none font-semibold text-white">
+            Watermark
+          </span>
+        </label>
       </Show>
       <a
         target="_blank"
@@ -100,13 +113,6 @@ function TopBar() {
         <Icon path={informationCircle} class="h-5" />
         Help
       </a>
-      <label class="inline-flex cursor-pointer items-center bg-black px-4 h-[40px]">
-        <input type="checkbox" value="" class="peer sr-only" checked={ctx.watermark()} oninput={(e)=>ctx.setWatermark(e.target.checked)}/>
-        <div class="peer relative h-5 w-9 rounded-full bg-gray-500  after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-green-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-white rtl:peer-checked:after:-translate-x-full"></div>
-        <span class="ms-3  text-white select-none font-semibold">
-          Watermark
-        </span>
-      </label>
     </div>
   );
 }
