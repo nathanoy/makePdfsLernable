@@ -16,7 +16,7 @@ function TopBar() {
   const [input, setInput] = createSignal<HTMLInputElement>();
   const [working, setWorking] = createSignal(false);
   return (
-    <div class="sticky top-0 z-10 flex w-full flex-wrap place-content-center gap-4 p-4 backdrop-blur">
+    <div class="sticky top-0 z-10 flex w-full flex-wrap place-content-center gap-4 p-4 backdrop-blur shadow-xl">
       <Show when={ctx.lastUrl()}>
         {(href) => (
           <>
@@ -91,7 +91,7 @@ function TopBar() {
           <Icon path={trash} class="h-5" />
           Unload
         </button>
-        <label class="inline-flex h-[40px] cursor-pointer items-center bg-black px-4">
+        <label class="inline-flex fancy-button">
           <input
             type="checkbox"
             value=""
@@ -99,7 +99,7 @@ function TopBar() {
             checked={ctx.watermark()}
             oninput={(e) => ctx.setWatermark(e.target.checked)}
           />
-          <div class="peer relative h-5 w-9 rounded-full bg-red-500 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-white rtl:peer-checked:after:-translate-x-full"></div>
+          <div class="peer relative h-5 w-9 rounded-full bg-red-500 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 transition-shadow peer-focus:ring-white rtl:peer-checked:after:-translate-x-full"></div>
           <span class="ms-3 select-none font-semibold text-white">
             Watermark
           </span>
@@ -120,7 +120,7 @@ function TopBar() {
 function Main() {
   const ctx = useCtx();
   return (
-    <>
+    <div class="bg-[#d2d2cf] min-h-screen">
       <TopBar />
       <div
         class="m-auto max-w-screen-md"
@@ -136,7 +136,7 @@ function Main() {
           )}
         </Show>
       </div>
-    </>
+    </div>
   );
 }
 

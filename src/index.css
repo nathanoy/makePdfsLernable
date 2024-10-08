@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 .fancy-button {
-  width: 130px;
+  padding-inline: 1rem;
   height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(15, 15, 15);
+  background-color: #0f0f0f;
   border: none;
   color: white;
   font-weight: 600;
@@ -20,21 +20,22 @@
 }
 
 .fancy-button::before {
-  width: 130px;
-  height: 130px;
+  width: 100%;
+  aspect-ratio: 1/1;
   position: absolute;
   content: "";
   background-color: white;
   border-radius: 50%;
-  left: -100%;
+  left: 0;
   top: 0;
   transition-duration: 0.3s;
   mix-blend-mode: difference;
+  transform: translate(-100%, 0%);
 }
 
 .fancy-button:hover::before {
   transition-duration: 0.3s;
-  transform: translate(100%, -50%);
+  transform: translate(0, -20px);
   border-radius: 0;
 }
 
