@@ -14,15 +14,14 @@ import {
 function TopBar() {
   const ctx = useCtx();
   const [input, setInput] = createSignal<HTMLInputElement>();
-  const [working, setWorking] = createSignal(false);
   return (
-    <div class="sticky top-0 z-10 flex w-full flex-wrap place-content-center gap-4 p-4 backdrop-blur shadow-xl">
+    <div class="sticky top-0 z-10 flex w-full flex-wrap place-content-center gap-4 p-4 shadow-xl backdrop-blur">
       <Show when={ctx.lastUrl()}>
         {(href) => (
           <>
             <a href={href()} target="_blank" class="fancy-button">
               <Icon path={arrowTopRightOnSquare} class="h-5" />
-              Open Again
+              Open again
             </a>
             {/* <a
               href={href()}
@@ -62,20 +61,9 @@ function TopBar() {
           </button>
         }
       >
-        <button
-          onclick={async () => {
-            setWorking(true);
-            try {
-              await ctx.render();
-            } catch (e) {
-              console.error(e);
-            }
-            setWorking(false);
-          }}
-          class="fancy-button"
-        >
+        <button onclick={ctx.render} class="fancy-button">
           <Show
-            when={working()}
+            when={ctx.working()}
             fallback={<Icon path={rocketLaunch} class="h-5" />}
           >
             <Icon path={arrowPath} class="h-5 animate-spin" />
@@ -91,7 +79,7 @@ function TopBar() {
           <Icon path={trash} class="h-5" />
           Unload
         </button>
-        <label class="inline-flex fancy-button">
+        <label class="fancy-button inline-flex">
           <input
             type="checkbox"
             value=""
@@ -99,7 +87,7 @@ function TopBar() {
             checked={ctx.watermark()}
             oninput={(e) => ctx.setWatermark(e.target.checked)}
           />
-          <div class="peer relative h-5 w-9 rounded-full bg-red-500 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 transition-shadow peer-focus:ring-white rtl:peer-checked:after:-translate-x-full"></div>
+          <div class="peer relative h-5 w-9 rounded-full bg-red-500 transition-shadow after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-white rtl:peer-checked:after:-translate-x-full"></div>
           <span class="ms-3 select-none font-semibold text-white">
             Watermark
           </span>
@@ -120,7 +108,7 @@ function TopBar() {
 function Main() {
   const ctx = useCtx();
   return (
-    <div class="bg-[#d2d2cf] min-h-screen">
+    <div class="min-h-screen bg-[#d2d2cf]">
       <TopBar />
       <div
         class="m-auto max-w-screen-md"

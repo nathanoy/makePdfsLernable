@@ -11,6 +11,7 @@ import { addImagesToPDF, paintRect, RectLocation } from "./editPdf";
 
 export function createPDFContext() {
   const [touchMode, setTouchMode] = createSignal(false);
+  const [working, setWorking] = createSignal(false);
 
   const [watermark, setWatermark] = createSignal(true);
 
@@ -57,11 +58,15 @@ export function createPDFContext() {
     watermark,
     setWatermark,
 
+    working,
+    setWorking,
+
     lastUrl,
     setLastUrl,
 
     loadedPdf,
     setLoadedPdf,
+
     pdfBytes,
     setPdfBytes,
 
@@ -74,38 +79,44 @@ export function createPDFContext() {
     },
 
     async render() {
-      const local_bytes = pdfBytes();
-      if (!local_bytes) return;
-      const pdfDoc = await PDFDocument.load(local_bytes);
-      const HelveticaBoldFont = await pdfDoc.embedFont(
-        StandardFonts.HelveticaBold,
-      );
-      const pages = pdfDoc.getPages();
+      if (working()) return;
+      setWorking(true);
+      try {
+        const local_bytes = pdfBytes();
+        if (!local_bytes) return;
+        const pdfDoc = await PDFDocument.load(local_bytes);
+        const HelveticaBoldFont = await pdfDoc.embedFont(
+          StandardFonts.HelveticaBold,
+        );
+        const pages = pdfDoc.getPages();
 
-      const imgs: { imgBlob: Blob; rect: RectLocation; label: string }[] = [];
+        const imgs: { imgBlob: Blob; rect: RectLocation; label: string }[] = [];
 
-      for (const { pageNum, RectsWithImg } of registeredPages) {
-        const page = pages[pageNum - 1]; // Page number to page index
+        for (const { pageNum, RectsWithImg } of registeredPages) {
+          const page = pages[pageNum - 1]; // Page number to page index
 
-        const rects = await RectsWithImg();
-        for (const [i, [rect, imgBlob]] of rects.entries()) {
-          const txt = rects.length > 1 ? `${pageNum}.${i + 1}` : `${pageNum}`;
-          paintRect(page, rect, txt, HelveticaBoldFont);
-
-          imgs.push({
-            imgBlob,
-            rect,
-            label: txt,
-          });
+          const rects = await RectsWithImg();
+          for (const [i, [rect, imgBlob]] of rects.entries()) {
+            const txt = rects.length > 1 ? `${pageNum}.${i + 1}` : `${pageNum}`;
+            paintRect(page, rect, txt, HelveticaBoldFont);
+            imgs.push({
+              imgBlob,
+              rect,
+              label: txt,
+            });
+          }
         }
+        await addImagesToPDF(pdfDoc, HelveticaBoldFont, imgs, watermark());
+        const bytes = await pdfDoc.save();
+        const url = URL.createObjectURL(
+          new Blob([bytes], { type: "application/pdf" }),
+        );
+        setLastUrl(url);
+        window.open(url, "_blank");
+      } catch (e) {
+        console.error(e);
       }
-      await addImagesToPDF(pdfDoc, HelveticaBoldFont, imgs, watermark());
-      const bytes = await pdfDoc.save();
-      const url = URL.createObjectURL(
-        new Blob([bytes], { type: "application/pdf" }),
-      );
-      setLastUrl(url)
-      window.open(url, "_blank");
+      setWorking(false);
     },
   } as const;
 }
