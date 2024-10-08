@@ -20,7 +20,6 @@ You can view and interact with the application [here](https://nathanoy.github.io
 1. Load your PDF document using the `Load` button.
 2. Select the portion of the PDF you wish to hide. Check [Guide](https://github.com/nathanoy/makePdfsLernable/blob/main/Guide.md) for details.
 3. Click `Render` to generate the result.
-4. Click `Open` to Open the file in your browser where you can Download it if you like.
 
 ## Contributing
 

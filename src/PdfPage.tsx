@@ -102,7 +102,6 @@ export function PdfPage(props: {
           return [r, img] as Awaited<ReturnType<DrainFunc>>[number];
         }),
       );
-      setRects([]);
       return ret;
     });
   });

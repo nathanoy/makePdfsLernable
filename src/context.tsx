@@ -1,4 +1,4 @@
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import { last, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import * as pdfjs from "pdfjs-dist";
 import {
   createContext,
@@ -6,26 +6,28 @@ import {
   createSignal,
   useContext,
 } from "solid-js";
-import { DrainFunc } from "./PdfPage";
+import { DrainFunc as ReadRectsWImgFunc } from "./PdfPage";
 import { addImagesToPDF, paintRect, RectLocation } from "./editPdf";
 
 export function createPDFContext() {
   const [touchMode, setTouchMode] = createSignal(false);
 
-  const [src, setSrc] = createSignal<string>();
+  const [watermark, setWatermark] = createSignal(true);
+
+  const [lastUrl, setLastUrl] = createSignal<string>();
   const [pdfBytes, setPdfBytes] = createSignal<ArrayBuffer>();
   const [loadedPdf, setLoadedPdf] = createSignal<pdfjs.PDFDocumentProxy>();
 
-  createEffect(async () => {
-    const local_src = src();
-    if (!local_src) {
-      setPdfBytes(undefined);
-      return;
-    }
-    const response = await fetch(local_src);
-    const bytes = await response.arrayBuffer();
-    setPdfBytes(bytes);
-  });
+  // createEffect(async () => {
+  //   const local_src = src();
+  //   if (!local_src) {
+  //     setPdfBytes(undefined);
+  //     return;
+  //   }
+  //   const response = await fetch(local_src);
+  //   const bytes = await response.arrayBuffer();
+  //   setPdfBytes(bytes);
+  // });
 
   createEffect(async () => {
     const bytes = pdfBytes();
@@ -45,15 +47,19 @@ export function createPDFContext() {
   let registeredPages: {
     pageNum: number;
     canvas: HTMLCanvasElement;
-    drainRectsWithImg: DrainFunc;
+    RectsWithImg: ReadRectsWImgFunc;
   }[] = [];
 
   return {
     touchMode,
     setTouchMode,
 
-    src,
-    setSrc,
+    watermark,
+    setWatermark,
+
+    lastUrl,
+    setLastUrl,
+
     loadedPdf,
     setLoadedPdf,
     pdfBytes,
@@ -62,9 +68,9 @@ export function createPDFContext() {
     registerPage(
       pageNum: number,
       canvas: HTMLCanvasElement,
-      drainRectsWithImg: DrainFunc,
+      RectsWithImg: ReadRectsWImgFunc,
     ) {
-      registeredPages.push({ pageNum, canvas, drainRectsWithImg });
+      registeredPages.push({ pageNum, canvas, RectsWithImg });
     },
 
     async render() {
@@ -78,10 +84,10 @@ export function createPDFContext() {
 
       const imgs: { imgBlob: Blob; rect: RectLocation; label: string }[] = [];
 
-      for (const { pageNum, drainRectsWithImg } of registeredPages) {
+      for (const { pageNum, RectsWithImg } of registeredPages) {
         const page = pages[pageNum - 1]; // Page number to page index
 
-        const rects = await drainRectsWithImg();
+        const rects = await RectsWithImg();
         for (const [i, [rect, imgBlob]] of rects.entries()) {
           const txt = rects.length > 1 ? `${pageNum}.${i + 1}` : `${pageNum}`;
           paintRect(page, rect, txt, HelveticaBoldFont);
@@ -93,14 +99,13 @@ export function createPDFContext() {
           });
         }
       }
-      await addImagesToPDF(pdfDoc, HelveticaBoldFont, imgs);
+      await addImagesToPDF(pdfDoc, HelveticaBoldFont, imgs, watermark());
       const bytes = await pdfDoc.save();
-      setSrc((old) => {
-        if (old) URL.revokeObjectURL(old); // when its invalid nothing happens
-        return URL.createObjectURL(
-          new Blob([bytes], { type: "application/pdf" }),
-        );
-      });
+      const url = URL.createObjectURL(
+        new Blob([bytes], { type: "application/pdf" }),
+      );
+      setLastUrl(url)
+      window.open(url, "_blank");
     },
   } as const;
 }

@@ -11,17 +11,37 @@ export async function addImagesToPDF(
   pdf: PDFDocument,
   font: PDFFont,
   imgs: { imgBlob: Blob; rect: RectLocation; label: string }[],
+  watermark = false,
 ) {
+  if (imgs.length === 0) return;
+
   let page = pdf.addPage();
+
   const { width, height } = page.getSize();
   const margin = 20;
   const fontSize = 16;
-  const gap = 20;
+  const gap = 15;
 
   let yOffset = height - margin;
   let yLineMin = yOffset;
   let prevYOffset = yOffset;
   let xOffset = width; // so the first image hits the "new line" code block
+  const watermarkfn = () => {
+    if (!watermark) return;
+    const url = "https://nathanoy.github.io/makePdfsLernable";
+    const txt = `Created with ${url}`;
+    const textWidth = font.widthOfTextAtSize(txt, 6);
+    const textHeight = font.heightAtSize(fontSize);
+
+    page.drawText(txt, {
+      x: (width - textWidth) / 2,
+      y: 5,
+      size: 6,
+      font: font,
+      color: rgb(0.5, 0.5, 0.5),
+    });
+  };
+  watermarkfn();
 
   for (const { imgBlob, label, rect } of imgs) {
     const imgArrayBuffer = await imgBlob.arrayBuffer();
@@ -42,7 +62,7 @@ export async function addImagesToPDF(
     yLineMin = Math.min(yLineMin, yOffset);
     if (
       width - (margin + xOffset + gap) > imageWidth &&
-      prevYOffset > (gap * 3) / 2 + fontSize + imageHeight
+      prevYOffset > gap * 2 + fontSize + imageHeight
     ) {
       yOffset = prevYOffset;
       xOffset += gap;
@@ -52,10 +72,12 @@ export async function addImagesToPDF(
       xOffset = margin;
     }
 
-    if (yOffset < (gap * 3) / 2 + fontSize + imageHeight) {
+    if (yOffset < gap * 2 + fontSize + imageHeight) {
+      // new page
       yOffset = prevYOffset = yLineMin = height - margin;
       xOffset = margin;
       page = pdf.addPage();
+      watermarkfn();
     }
     yOffset -= fontSize + gap;
     page.drawText(label, {
@@ -80,7 +102,6 @@ export async function addImagesToPDF(
       borderColor: rgb(0.3, 0.3, 0.3),
       borderWidth: 1,
     });
-    yOffset -= gap;
     xOffset += imageWidth;
   }
 }
@@ -96,7 +117,11 @@ export function paintRect(
   const y = rect.y * bb.height;
   const h = rect.h * bb.height;
   const w = rect.w * bb.width;
-  const fontSize = Math.min(Math.round(h * 0.8), 0.04 * bb.height, 0.04 * bb.width);
+  const fontSize = Math.min(
+    Math.round(h * 0.8),
+    0.04 * bb.height,
+    0.04 * bb.width,
+  );
   page.drawRectangle({
     x,
     y,
